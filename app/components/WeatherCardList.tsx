@@ -3,17 +3,18 @@
 import { useSelector } from "react-redux";
 import { RootState } from "@/state/store";
 import WeatherDayCard from "./WeatherDayCard";
+import { Status } from "@/types/status";
 
 export default function WeatherCardsList() {
   const { dailyForecast, status, error, selectedLocation } = useSelector(
     (state: RootState) => state.weather
   );
 
-  if (status === "pending") {
+  if (status === Status.PENDING) {
     return <div>Loading weather for {selectedLocation?.name ?? "location"}...</div>;
   }
 
-  if (status === "failed") {
+  if (status === Status.FAILED) {
     return <div className="text-red-500">Error fetching weather: {error}</div>;
   }
 

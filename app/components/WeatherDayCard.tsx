@@ -3,7 +3,7 @@ import React from "react";
 import styles from "./WeatherDayCard.module.css";
 
 type WeatherDayCardProps = {
-  date: string; // ISO string from Open-Meteo
+  date: string; 
   high: number;
   low: number;
   precip: number;

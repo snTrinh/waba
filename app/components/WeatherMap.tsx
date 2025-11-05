@@ -30,7 +30,6 @@ const WeatherMap: React.FC = () => {
           scrollWheelZoom: false, 
           doubleClickZoom: false, 
           boxZoom: false,
-        //   zoomControl: false, 
         });
 
         const apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
