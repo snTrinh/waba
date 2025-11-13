@@ -1,16 +1,19 @@
 import React, { useRef, useEffect } from "react";
 import "leaflet/dist/leaflet.css";
 import styles from "./WeatherMap.module.css";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setSelectedLocation } from "@/state/weatherSlice";
 import { mapCenter } from "@/config/mapConfig";
 import { boulderingAreas } from "@/types/location";
+import { RootState } from "@/state/store";
 
 const WeatherMap: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const map = useRef<any>(null);
   const dispatch = useDispatch();
-
+  const selectedLocation = useSelector(
+    (state: RootState) => state.weather.selectedLocation
+  );
   useEffect(() => {
     let initialized = false;
 
@@ -51,15 +54,23 @@ const WeatherMap: React.FC = () => {
             fillOpacity: 0.4,
           }).addTo(map.current);
 
-          circle.on("click", () => {
-            dispatch(
-              setSelectedLocation({
-                name: spot.name,
-                lat: spot.lat,
-                long: spot.long, 
-              })
-            );
-          });
+          const handleSelect = () => {
+            if (
+              !selectedLocation ||
+              selectedLocation.lat !== spot.lat ||
+              selectedLocation.long !== spot.long
+            ) {
+              dispatch(
+                setSelectedLocation({
+                  name: spot.name,
+                  lat: spot.lat,
+                  long: spot.long,
+                })
+              );
+            }
+          };
+
+          circle.on("click", handleSelect);
 
 
           const customLabelIcon = L.divIcon({
@@ -97,7 +108,7 @@ const WeatherMap: React.FC = () => {
         map.current = null;
       }
     };
-  }, [dispatch]);
+  }, [dispatch, selectedLocation]);
 
   return (
     <div className={styles.mapWrap}>
