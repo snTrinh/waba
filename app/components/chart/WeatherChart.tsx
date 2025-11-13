@@ -34,12 +34,27 @@ const WeatherChart: React.FC = () => {
 
   const chartConfig = useMemo(() => {
     if (!hourlyForecast || !selectedDay) return null;
-    return generateWeatherChartData(hourlyForecast, selectedDay, selectedLocation?.name || "");
+    return generateWeatherChartData(
+      hourlyForecast,
+      selectedDay,
+      selectedLocation?.name || ""
+    );
   }, [hourlyForecast, selectedDay, selectedLocation?.name]);
 
   if (!chartConfig) return null;
 
-  return <Chart type="bar" data={chartConfig.data} options={chartConfig.options} />;
+  return (
+    <>
+      <Chart type="bar" data={chartConfig.data} options={chartConfig.options} />
+      <small className="weather-license-details">
+        Data Source:{" "}
+        <a href="https://eccc-msc.github.io/open-data/licence/readme_en/">
+          Environment and Climate Change Canada
+        </a>{" "}
+        and <a href="https://open-meteo.com/">Weather data by Open-Meteo.com</a>
+      </small>
+    </>
+  );
 };
 
 export default WeatherChart;

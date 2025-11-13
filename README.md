@@ -2,9 +2,18 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 This is a POC for displaying weather on a Leaflet map
 
+
 ## Getting Started
 
-First, run the development server:
+First, create an `.env.local` containing the following:
+
+`
+NEXT_PUBLIC_MAPTILER_API_KEY=api_key_goes_here
+NEXT_PUBLIC_MAPTILER_STYLE_URL=style_url_goes_here
+`
+Please contact Susan Trinh for the API keys 🤖
+
+Next, run the development server:
 
 ```bash
 npm run dev
