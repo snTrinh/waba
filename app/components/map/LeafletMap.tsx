@@ -1,3 +1,5 @@
+"use client";
+
 import { mapCenter } from "@/config/mapConfig";
 import { RootState } from "@/state/store";
 import { setSelectedLocation } from "@/state/weatherSlice";
@@ -7,46 +9,37 @@ import React, { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styles from "./LeafletMap.module.css";
 
-const LeaftletMap: React.FC = () => {
+const LeafletMap: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const map = useRef<any>(null);
   const dispatch = useDispatch();
   const selectedLocation = useSelector(
     (state: RootState) => state.weather.selectedLocation
   );
+
   useEffect(() => {
-    let initialized = false;
+    if (map.current || !mapContainer.current) return; 
 
-    (async () => {
-      if (map.current || !mapContainer.current) return;
+    const container = mapContainer.current; 
 
+    const initMap = async () => {
       try {
         const L = (await import("leaflet")).default;
-        const { MaptilerLayer, MapStyle } = await import(
-          "@maptiler/leaflet-maptilersdk"
-        );
+        const { MaptilerLayer } = await import("@maptiler/leaflet-maptilersdk");
 
-        map.current = new L.Map(mapContainer.current!, {
-          center: L.latLng(mapCenter.lat, mapCenter.long),
+        map.current = L.map(container, {
+          center: [mapCenter.lat, mapCenter.long],
           zoom: 7.5,
           scrollWheelZoom: false,
           doubleClickZoom: false,
           boxZoom: false,
         });
 
-        const apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
-        if (!apiKey) {
-          throw new Error(
-            "MapTiler API key is missing. Please set NEXT_PUBLIC_MAPTILER_API_KEY in .env.local"
-          );
-        }
-        const styleURL = process.env.NEXT_PUBLIC_MAPTILER_STYLE_URL;
         new MaptilerLayer({
-          apiKey: apiKey,
-          style: styleURL,
+          apiKey: process.env.NEXT_PUBLIC_MAPTILER_API_KEY!,
+          style: process.env.NEXT_PUBLIC_MAPTILER_STYLE_URL,
         }).addTo(map.current);
 
-        map.current.invalidateSize();
         boulderingAreas.forEach((spot) => {
           const circle = L.circle([spot.lat, spot.long], {
             radius: 6000,
@@ -79,34 +72,24 @@ const LeaftletMap: React.FC = () => {
             iconSize: [100, 20],
           });
 
-          L.marker([spot.lat, spot.long], {
-            icon: customLabelIcon,
-          })
+          L.marker([spot.lat, spot.long], { icon: customLabelIcon })
             .addTo(map.current)
-            .on("click", () => {
-              dispatch(
-                setSelectedLocation({
-                  name: spot.name,
-                  lat: spot.lat,
-                  long: spot.long,
-                })
-              );
-            });
+            .on("click", handleSelect);
         });
-
-        initialized = true;
-      } catch (error) {
-        console.error("Failed to initialize map:", error);
+      } catch (err) {
+        console.error("Failed to initialize map:", err);
       }
-    })();
+    };
+
+    initMap();
 
     return () => {
-      if (map.current && initialized) {
+      if (map.current) {
         map.current.remove();
         map.current = null;
       }
     };
-  }, [dispatch, selectedLocation]);
+  }, [dispatch]); 
 
   return (
     <div className={styles.mapWrap}>
@@ -115,4 +98,4 @@ const LeaftletMap: React.FC = () => {
   );
 };
 
-export default React.memo(LeaftletMap);
+export default React.memo(LeafletMap);

@@ -68,6 +68,7 @@ export default function StaticMap() {
         const markerSize = Math.max(10, Math.min(80, (w / 2417) * 80));
         return (
           <div
+          key={m.name}
             onClick={() => onMarkerClick(m)}
             className="absolute rounded-full cursor-pointer"
             style={{
