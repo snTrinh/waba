@@ -1,13 +1,11 @@
 "use client";
 import { setSelectedLocation } from "@/state/weatherSlice";
-import { CragLocation } from "@/types/location";
+import { boulderingAreas } from "@/types/location";
 import { generateMarkersFromLocations, gpsToMap } from "@/utils/gps";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
-import { boulderingAreas } from "@/types/location";
 
 export type MapMarker = {
-  id: string;
   name: string;
   pixel: {
     x: number;
@@ -26,7 +24,11 @@ export default function StaticMap() {
   const dispatch = useDispatch();
   const w = imgRef.current?.clientWidth ?? 1;
   const h = imgRef.current?.clientHeight ?? 1;
-  const markers: MapMarker[] = generateMarkersFromLocations(boulderingAreas, w, h);
+  const markers: MapMarker[] = generateMarkersFromLocations(
+    boulderingAreas,
+    w,
+    h
+  );
 
   const handleImageLoad = () => {
     setRenderTick((t) => t + 1);
@@ -66,7 +68,6 @@ export default function StaticMap() {
         const markerSize = Math.max(10, Math.min(80, (w / 2417) * 80));
         return (
           <div
-            key={m.id}
             onClick={() => onMarkerClick(m)}
             className="absolute rounded-full cursor-pointer"
             style={{

@@ -13,12 +13,14 @@ type WeatherState = {
   error: string | null;
 };
 
+const emptyLocation: CragLocation = {
+  name: "",
+  lat: 0,
+  long: 0,
+};
+
 const initialState: WeatherState = {
-  selectedLocation: {
-    name: "",
-    lat: 0,
-    long: 0,
-  },
+  selectedLocation: emptyLocation,
   dailyForecast: null,
   hourlyForecast: null,
   selectedDay: new Date().toLocaleDateString("en-CA"),
@@ -26,12 +28,17 @@ const initialState: WeatherState = {
   error: null,
 };
 
+
+const formatToday = () => {
+  const d = new Date();
+  return d.toISOString().split("T")[0]; 
+};
+
 export const fetchWeather = createAsyncThunk(
   "weather/fetchWeather",
   async ({ lat, lon }: { lat: number; lon: number }) => {
     const data = await fetchDailyWeather(lat, lon);
-    console.log("Fetched weather data:", data);
-    return data;
+    return data; 
   }
 );
 
@@ -39,11 +46,12 @@ export const weatherSlice = createSlice({
   name: "weather",
   initialState,
   reducers: {
-    setSelectedLocation: (state, action: PayloadAction<CragLocation>) => {
+    setSelectedLocation(state, action: PayloadAction<CragLocation>) {
       state.selectedLocation = action.payload;
-      state.selectedDay = null;
+      state.selectedDay = null; // reset when switching locations
     },
-    setSelectedDay: (state, action: PayloadAction<string>) => {
+
+    setSelectedDay(state, action: PayloadAction<string>) {
       state.selectedDay = action.payload;
     },
   },
@@ -54,6 +62,7 @@ export const weatherSlice = createSlice({
         state.status = Status.PENDING;
         state.error = null;
       })
+
       .addCase(
         fetchWeather.fulfilled,
         (
@@ -63,24 +72,21 @@ export const weatherSlice = createSlice({
             hourly: HourlyWeather;
           }>
         ) => {
-          state.status = Status.SUCCEEDED;
-          state.dailyForecast = action.payload.daily;
-          state.hourlyForecast = action.payload.hourly;
-          const today = new Date();
-          const yyyy = today.getFullYear();
-          const mm = String(today.getMonth() + 1).padStart(2, "0");
-          const dd = String(today.getDate()).padStart(2, "0");
-          const todayStr = `${yyyy}-${mm}-${dd}`;
+          const { daily, hourly } = action.payload;
 
-          const todayInForecast = action.payload.daily.find(
-            (d) => d.date === todayStr
-          );
+          state.status = Status.SUCCEEDED;
+          state.dailyForecast = daily;
+          state.hourlyForecast = hourly;
+
+          const today = formatToday();
+
           state.selectedDay =
-            todayInForecast?.date ??
-            action.payload.daily?.[0]?.date ??
-            todayStr;
+            daily.find((d) => d.date === today)?.date ??
+            daily[0]?.date ??
+            today;
         }
       )
+
       .addCase(fetchWeather.rejected, (state, action) => {
         state.status = Status.FAILED;
         state.error = action.error.message || "Failed to fetch weather data.";
@@ -89,5 +95,4 @@ export const weatherSlice = createSlice({
 });
 
 export const { setSelectedLocation, setSelectedDay } = weatherSlice.actions;
-
 export default weatherSlice.reducer;
