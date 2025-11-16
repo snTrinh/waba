@@ -1,11 +1,11 @@
 import { fetchDailyWeather } from "@/lib/weather/openMeteo";
-import { Location } from "@/types/location";
+import { CragLocation } from "@/types/location";
 import { Status } from "@/types/status";
 import { DailyWeather, HourlyWeather } from "@/types/weather";
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 type WeatherState = {
-  selectedLocation: Location;
+  selectedLocation: CragLocation;
   dailyForecast: DailyWeather[] | null;
   hourlyForecast: HourlyWeather | null;
   selectedDay: string | null;
@@ -39,7 +39,7 @@ export const weatherSlice = createSlice({
   name: "weather",
   initialState,
   reducers: {
-    setSelectedLocation: (state, action: PayloadAction<Location>) => {
+    setSelectedLocation: (state, action: PayloadAction<CragLocation>) => {
       state.selectedLocation = action.payload;
       state.selectedDay = null;
     },

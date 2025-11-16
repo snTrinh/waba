@@ -1,13 +1,13 @@
-import React, { useRef, useEffect } from "react";
-import "leaflet/dist/leaflet.css";
-import styles from "./WeatherMap.module.css";
-import { useDispatch, useSelector } from "react-redux";
-import { setSelectedLocation } from "@/state/weatherSlice";
 import { mapCenter } from "@/config/mapConfig";
-import { boulderingAreas } from "@/types/location";
 import { RootState } from "@/state/store";
+import { setSelectedLocation } from "@/state/weatherSlice";
+import { boulderingAreas } from "@/types/location";
+import "leaflet/dist/leaflet.css";
+import React, { useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import styles from "./LeafletMap.module.css";
 
-const WeatherMap: React.FC = () => {
+const LeaftletMap: React.FC = () => {
   const mapContainer = useRef<HTMLDivElement | null>(null);
   const map = useRef<any>(null);
   const dispatch = useDispatch();
@@ -26,25 +26,25 @@ const WeatherMap: React.FC = () => {
           "@maptiler/leaflet-maptilersdk"
         );
 
-
         map.current = new L.Map(mapContainer.current!, {
           center: L.latLng(mapCenter.lat, mapCenter.long),
           zoom: 7.5,
-          scrollWheelZoom: false, 
-          doubleClickZoom: false, 
+          scrollWheelZoom: false,
+          doubleClickZoom: false,
           boxZoom: false,
         });
 
         const apiKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
         if (!apiKey) {
-            throw new Error("MapTiler API key is missing. Please set NEXT_PUBLIC_MAPTILER_API_KEY in .env.local");
-          }
+          throw new Error(
+            "MapTiler API key is missing. Please set NEXT_PUBLIC_MAPTILER_API_KEY in .env.local"
+          );
+        }
         const styleURL = process.env.NEXT_PUBLIC_MAPTILER_STYLE_URL;
         new MaptilerLayer({
           apiKey: apiKey,
-          style: styleURL, 
+          style: styleURL,
         }).addTo(map.current);
-
 
         map.current.invalidateSize();
         boulderingAreas.forEach((spot) => {
@@ -72,11 +72,10 @@ const WeatherMap: React.FC = () => {
 
           circle.on("click", handleSelect);
 
-
           const customLabelIcon = L.divIcon({
-            className: "custom-spot-label", 
+            className: "custom-spot-label",
             html: `<span>${spot.name}</span>`,
-            iconAnchor: [25, -15], 
+            iconAnchor: [25, -15],
             iconSize: [100, 20],
           });
 
@@ -89,7 +88,7 @@ const WeatherMap: React.FC = () => {
                 setSelectedLocation({
                   name: spot.name,
                   lat: spot.lat,
-                  long: spot.long, 
+                  long: spot.long,
                 })
               );
             });
@@ -100,7 +99,6 @@ const WeatherMap: React.FC = () => {
         console.error("Failed to initialize map:", error);
       }
     })();
-
 
     return () => {
       if (map.current && initialized) {
@@ -117,4 +115,4 @@ const WeatherMap: React.FC = () => {
   );
 };
 
-export default React.memo(WeatherMap);
+export default React.memo(LeaftletMap);
