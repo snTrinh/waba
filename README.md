@@ -1,6 +1,9 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-This is a POC for displaying weather on a Leaflet map
+This is a POC for displaying weather on a Leaflet map and static img.
+
+<img width="800" height="1000" alt="Leaflet" src="https://github.com/user-attachments/assets/1c6ba744-f2d7-4b3a-a790-372d4cdbc0f8" />
+<img width="800" height="1000" alt="Static" src="https://github.com/user-attachments/assets/fb50a475-f708-4213-aae6-4ec762a5fa8c" />
 
 
 ## Getting Started
